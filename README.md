@@ -1,4 +1,3 @@
-
 # 📣 RabbitMQ Notifications (Node.js) — Dari Basic sampai Use Case
 
 Repositori ini membantu kamu belajar RabbitMQ **dari dasar** sampai **penerapan nyata** untuk **sistem notifikasi** (email, SMS, push).  
@@ -269,6 +268,7 @@ Repo ini sudah terintegrasi **SMTP** via **Nodemailer** untuk mengirim email sun
 > - `SMTP_PORT=465` gunakan `secure=true` (otomatis oleh worker).
 > - Jika `SMTP_USER/PASS` tidak di-set, worker akan **fallback** hanya log ke console (tidak mengirim).
 > - Untuk produksi, gunakan provider SMTP/ESP yang andal dan setup retry/delivery monitoring.
+
 ---
 
 ## 🌐 Express API Producer + Sequelize (MySQL)
@@ -338,3 +338,69 @@ Tips:
 - Jalankan workers (email/sms/push) agar pesan benar-benar dikonsumsi.
 - Tabel `notifications` dibuat otomatis via `sequelize.sync()`.
 - Untuk produksi, gunakan migrasi (umumnya dengan `sequelize-cli`) dan kendalikan `sync`.
+
+---
+
+## 🚀 Cara Menjalankan Aplikasi (Node.js)
+
+### 1. Jalankan RabbitMQ & MySQL (via Docker Compose)
+```bash
+docker compose up -d
+```
+- RabbitMQ UI: http://localhost:15672 (guest/guest)
+- MySQL: 127.0.0.1:3306 (user: notify, pass: notify123, db: notifydb)
+
+### 2. Setup & Install Dependency
+```bash
+cd node
+cp .env.example .env
+npm install
+```
+
+### 3. Buat Topologi RabbitMQ
+```bash
+node services/setup.js
+```
+
+### 4. Jalankan API Server (Express)
+```bash
+npm run dev
+# atau
+nodemon api-server.js
+```
+- API: http://localhost:3000
+
+### 5. Jalankan Worker (Email, SMS, Push)
+Bisa di terminal berbeda, atau paralel:
+```bash
+npm run worker:email   # Worker email
+npm run worker:sms     # Worker sms
+npm run worker:push    # Worker push
+# Atau semua sekaligus (butuh npm-run-all):
+npm run worker:all
+```
+
+### 6. Coba Kirim Notifikasi via API
+Contoh menggunakan curl:
+```bash
+curl -X POST http://localhost:3000/api/notifications \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "email",
+    "type": "welcome",
+    "to": "user@example.com",
+    "subject": "Welcome!",
+    "message": "Selamat datang di layanan kami."
+  }'
+```
+
+### 7. Cek Daftar Notifikasi
+```bash
+curl http://localhost:3000/api/notifications
+```
+
+### 8. Cek Detail Notifikasi
+```bash
+curl http://localhost:3000/api/notifications/<id>
+```
+Ganti `<id>` dengan ID notifikasi yang didapat dari response API.

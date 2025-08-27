@@ -5,15 +5,23 @@
   "type": "module",
   "dependencies": {
     "amqplib": "^0.10.4",
-    "dotenv": "^16.4.5",
-    "yargs": "^17.7.2",
-    "uuid": "^9.0.1",
-    "nodemailer": "^6.9.14",
-    "express": "^4.19.2",
-    "sequelize": "^6.37.3",
-    "mysql2": "^3.9.7",
-    "joi": "^17.13.3",
     "cors": "^2.8.5",
-    "morgan": "^1.10.0"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "joi": "^17.13.3",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.9.7",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.10",
+    "sequelize": "^6.37.3",
+    "uuid": "^9.0.1",
+    "yargs": "^17.7.2"
+  },
+  "scripts": {
+    "dev": "nodemon api-server.js",
+    "worker:email": "nodemon services/worker-email.js",
+    "worker:sms": "nodemon services/worker-sms.js",
+    "worker:push": "nodemon services/worker-push.js",
+    "worker:all": "npm-run-all --parallel worker:email worker:sms worker:push"
   }
 }
